@@ -95,10 +95,11 @@ const dropdownItemStyle = {
                 
                 <Link to="/" className="navbar-brand">
                     <img 
-                        src="/images/logomon1.png" 
+                        src="/images/logonuevo19.png" 
                         alt="Logo" 
                         style={{ 
-                            height: "130px",
+                            height: "150px",
+                            width: "150px",
                             filter: "drop-shadow(0 2px 4px rgba(47, 79, 79, 0.3))"
                         }} 
                     />

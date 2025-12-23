@@ -284,6 +284,51 @@ export function ShoeProvider({ children }) {
     }
   },
   
+// Obtener perfil COMPLETO
+getProfile : async () => {
+  const response = await fetch('/api/me', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await response.json();
+  // Ya tienes preferences y favorites en data.user
+  return data.user;
+},
+
+// Actualizar preferencias
+updatePreferences : async (preferences) => {
+  await fetch('/api/me/update', {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ preferences })
+  });
+},
+
+// Añadir favorito
+ addFavorite : async (shoeId) => {
+  await fetch('/api/me/favorites', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ shoe_id: shoeId })
+  });
+},
+
+// Eliminar favorito
+ removeFavorite : async (shoeId) => {
+  await fetch(`/api/me/favorites/${shoeId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+  });
+},
+
   logout: (navigate) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

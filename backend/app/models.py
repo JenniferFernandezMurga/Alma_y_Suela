@@ -1,7 +1,7 @@
-from app import db
+from app.database import db  # <-- Importar desde database.py
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+import json
 
 class Shoe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -64,6 +64,9 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)  # Cambiado de password a password_hash
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    preferences = db.Column(db.Text, default='{}')  # JSON
+    favorite_shoes = db.Column(db.Text, default='[]')  # Array de IDs
+    saved_recommendations = db.Column(db.Text, default='[]')  # Array de objetos
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -76,7 +79,10 @@ class User(db.Model):
             'id': self.id,
             'name': self.name,
             'email': self.email,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat(),
+            'preferences': self.preferences,
+            'favorite_shoes': self.favorite_shoes,
+            'saved_recommendations': self.saved_recommendations
         }
 
 class UserSession(db.Model):

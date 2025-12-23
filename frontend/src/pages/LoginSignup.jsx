@@ -206,7 +206,7 @@ const LoginSignup = () => {
                 <div className="auth-header">
                     <div className="auth-logo-wrapper">
                         <img 
-                            src="/images/logomonsin1.png" 
+                            src="/images/logonuevo19.png" 
                             alt="Logo Alma & Suela" 
                             className="auth-logo-image"
                         />
