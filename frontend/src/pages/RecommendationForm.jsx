@@ -17,6 +17,42 @@ const RecommendationForm = () => {
     const [error, setError] = useState("")
     const navigate = useNavigate()
 
+const formStyles = {
+  card: {
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+    borderRadius: '20px',
+    border: '2px solid rgba(143, 188, 143, 0.3)',
+    boxShadow: '0 15px 35px rgba(139, 69, 19, 0.1)',
+    overflow: 'hidden'
+  },
+  header: {
+    background: 'linear-gradient(135deg, #8fbc8f 0%, #2e8b57 100%)',
+    color: 'white',
+    padding: '2rem',
+    textAlign: 'center'
+  },
+  select: {
+    background: '#f8fff8',
+    border: '2px solid #d2b48c',
+    borderRadius: '12px',
+    padding: '12px 16px',
+    fontSize: '1rem',
+    transition: 'all 0.3s ease'
+  },
+  button: {
+    background: 'linear-gradient(135deg, #8fbc8f, #2e8b57)',
+    border: 'none',
+    borderRadius: '50px',
+    padding: '15px 40px',
+    fontSize: '1.2rem',
+    fontWeight: '600',
+    boxShadow: '0 6px 20px rgba(143, 188, 143, 0.4)',
+    transition: 'all 0.3s ease'
+  }
+}
+
+
+
      // ✅ OPCIONES DE PESO DINÁMICAS
     const getWeightOptions = () => {
         if (formData.gender === 'female') {
@@ -142,7 +178,8 @@ const RecommendationForm = () => {
                                     <small className="text-muted d-block mb-2">Para ajustar mejor las recomendaciones</small>
                                     <select 
                                         name="gender"
-                                        className="form-select form-select-lg"
+                                         style={formStyles.select}
+                                        // className="form-select form-select-lg"
                                         value={formData.gender}
                                         onChange={handleChange}
                                         required
@@ -169,6 +206,7 @@ const RecommendationForm = () => {
                                         <select 
                                             name="weight"
                                             className="form-select form-select-lg"
+                                             style={formStyles.select}
                                             value={formData.weight}
                                             onChange={handleChange}
                                             required
@@ -193,6 +231,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="foot_width"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.foot_width}
                                         onChange={handleChange}
                                         required
@@ -210,6 +249,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="arch_type"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.arch_type}
                                         onChange={handleChange}
                                         required
@@ -245,6 +285,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="activity_type"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.activity_type}
                                         onChange={handleChange}
                                         required
@@ -267,6 +308,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="footstrike_type"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.footstrike_type}
                                         onChange={handleChange}
                                     >
@@ -284,6 +326,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="target_distance"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.target_distance}
                                         onChange={handleChange}
                                     >
@@ -303,6 +346,7 @@ const RecommendationForm = () => {
                                     <select 
                                         name="running_level"
                                         className="form-select form-select-lg"
+                                         style={formStyles.select}
                                         value={formData.running_level}
                                         onChange={handleChange}
                                     >

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 const ShoeStore = createContext();
 
@@ -18,7 +18,15 @@ const initialState = {
   recommendations : [],
   loading: false,
   error: null,
-  currentStep: 1
+  currentStep: 1,
+
+    auth: {
+    user: null,
+    isAuthenticated: false,
+    token: localStorage.getItem('token') || null,
+    authLoading: false,
+    authError: null
+  }
 
 };
 
@@ -76,7 +84,53 @@ function shoeReducer(state, action) {
       return {
         ...initialState
       };
-      
+
+    case 'LOGIN_START':
+  return {
+    ...state,
+    auth: {
+      ...state.auth,
+      authLoading: true,
+      authError: null
+    }
+  };
+
+case 'LOGIN_SUCCESS':
+  return {
+    ...state,
+    auth: {
+      user: action.payload.user,
+      token: action.payload.token,
+      isAuthenticated: true,
+      authLoading: false,
+      authError: null
+    }
+  };
+
+case 'LOGIN_ERROR':
+  return {
+    ...state,
+    auth: {
+      ...state.auth,
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      authLoading: false,
+      authError: action.payload
+    }
+  };
+
+case 'LOGOUT':
+  return {
+    ...state,
+    auth: {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      authLoading: false,
+      authError: null
+    }
+    };  
     default:
       return state;
   }
@@ -149,8 +203,159 @@ export function ShoeProvider({ children }) {
     // Reiniciar todo el formulario
     resetForm: () => {
       dispatch({ type: 'RESET_FORM' });
+    },
+    // Acción de login
+     login: async (email, password, navigate) => {
+    try {
+      dispatch({ type: 'LOGIN_START' });
+      
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Credenciales incorrectas');
+      }
+      
+      const data = await response.json();
+      
+      // Guardar token en localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: {
+          user: data.user,
+          token: data.token
+        }
+      });
+      
+      navigate('/'); // Redirigir al home
+      
+    } catch (error) {
+      dispatch({
+        type: 'LOGIN_ERROR',
+        payload: error.message
+      });
     }
+  },
+  
+  register: async (userData, navigate) => {
+    try {
+      dispatch({ type: 'LOGIN_START' });
+      
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error en el registro');
+      }
+      
+      const data = await response.json();
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: {
+          user: data.user,
+          token: data.token
+        }
+      });
+      
+      navigate('/');
+      
+    } catch (error) {
+      dispatch({
+        type: 'LOGIN_ERROR',
+        payload: error.message
+      });
+    }
+  },
+  
+// Obtener perfil COMPLETO
+getProfile : async () => {
+  const response = await fetch('/api/me', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await response.json();
+  // Ya tienes preferences y favorites en data.user
+  return data.user;
+},
+
+// Actualizar preferencias
+updatePreferences : async (preferences) => {
+  await fetch('/api/me/update', {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ preferences })
+  });
+},
+
+// Añadir favorito
+ addFavorite : async (shoeId) => {
+  await fetch('/api/me/favorites', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ shoe_id: shoeId })
+  });
+},
+
+// Eliminar favorito
+ removeFavorite : async (shoeId) => {
+  await fetch(`/api/me/favorites/${shoeId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+  });
+},
+
+  logout: (navigate) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch({ type: 'LOGOUT' });
+    if (navigate) navigate('/');
+  },
+  
+  // Verificar token al cargar la app
+  checkAuth: () => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: {
+          user: JSON.parse(user),
+          token: token
+        }
+      });
+    }
+  }
   };
+
+    useEffect(() => {
+    actions.checkAuth();
+  }, []);
 
   // 6. VALOR que se provee a todos los componentes
   const value = {

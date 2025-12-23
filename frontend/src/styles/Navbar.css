@@ -1,0 +1,58 @@
+/* Navbar.css - Crear este archivo */
+.navbar-custom {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%) !important;
+    border-bottom: 3px solid #d2b48c;
+    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
+    padding: 0.3rem 0;
+    min-height: 80px;
+}
+
+.navbar-container {
+    padding: 0 1rem;
+    align-items: center;
+}
+
+.navbar-brand-custom {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 140px !important; 
+    width: auto;
+    max-width: none;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(47, 79, 79, 0.3));
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover para el logo */
+.navbar-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 8px rgba(47, 79, 79, 0.4));
+}
+
+/* Botón de login más compacto */
+.login-btn-compact {
+    padding: 8px 18px !important;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 768px) {
+    .navbar-custom {
+        min-height: 70px;
+        padding: 0.2rem 0;
+    }
+    
+    .navbar-logo {
+        height: 100px !important;
+    }
+    
+    .navbar-container {
+        padding: 0 0.5rem;
+    }
+}

@@ -1,8 +1,10 @@
 from flask import Blueprint, jsonify, request
 from app.models import Shoe
-from app import db
+from app.database import db
 
 shoes_bp = Blueprint('shoes', __name__)
+
+#Blueprint: Permite modularizar la aplicación en componentes reutilizables
 
 @shoes_bp.route('/shoes', methods=['GET'])
 def get_all_shoes():
@@ -98,3 +100,7 @@ def get_shoe_by_id(id):
             "success":False,
             "error": str(e)
         }), 500
+    
+
+
+
