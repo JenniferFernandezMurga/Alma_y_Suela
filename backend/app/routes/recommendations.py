@@ -56,9 +56,10 @@
 #         print(f"❌ TRACEBACK: {traceback.format_exc()}")
 #         return jsonify({"error": str(e)}), 500
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+import traceback
 from app.models import Shoe
-from app.services.recommendation_engine import recommend_shoes_optimized 
+from app.services.recommendation_engine import recommend_shoes_optimized
 
 recommendations_bp = Blueprint('recommendations', __name__)
 
@@ -133,7 +134,7 @@ recommendations_bp = Blueprint('recommendations', __name__)
 def get_recommendations():
     try:
         user_data = request.json
-        print(f"🔍 Datos usuario: {user_data}")
+        current_app.logger.info(f"Recommendation request received for user: {user_data}")
         
         # Validación básica
         required_fields = ['gender', 'foot_width', 'arch_type', 'weight', 'activity_type']
@@ -153,9 +154,8 @@ def get_recommendations():
         })
     
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
-        import traceback
-        print(f"❌ TRACEBACK: {traceback.format_exc()}")
-        return jsonify({"error": str(e)}), 500
+        current_app.logger.error(f"Error processing recommendation: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An internal error occurred during recommendation."}), 500
 
     

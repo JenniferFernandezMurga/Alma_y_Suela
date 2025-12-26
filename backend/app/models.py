@@ -1,7 +1,5 @@
-from app.database import db  # <-- Importar desde database.py
+from app import db
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-import json
 
 class Shoe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,35 +56,14 @@ class Shoe(db.Model):
             'gender': self.gender
         }
 
+# Sistema de usuarios OPCIONAL (para futuro)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)  # Cambiado de password a password_hash
+    email = db.Column(db.String(120), unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    preferences = db.Column(db.Text, default='{}')  # JSON
-    favorite_shoes = db.Column(db.Text, default='[]')  # Array de IDs
-    saved_recommendations = db.Column(db.Text, default='[]')  # Array de objetos
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'email': self.email,
-            'created_at': self.created_at.isoformat(),
-            'preferences': self.preferences,
-            'favorite_shoes': self.favorite_shoes,
-            'saved_recommendations': self.saved_recommendations
-        }
 
 class UserSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    session_data = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Optional
+    session_data = db.Column(db.Text)  # JSON con preferencias
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

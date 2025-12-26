@@ -6,7 +6,7 @@ import Home from './pages/Home'
 import LoginSingup from './pages/LoginSignup'
 import RecommendationForm from './pages/RecommendationForm'
 import RecommendationResults from './pages/RecommendationResults'
-// import About from './pages/About'
+import About from './pages/About'
 import './styles/App.css'
 import SearchResults from './pages/SearchResults'
 import ProductDetail from './pages/ProductDetail'
@@ -23,7 +23,7 @@ function App() {
               <Route path="/recommend" element={<RecommendationForm />} />
               <Route path="/recommendation-results" element={<RecommendationResults />} />
               <Route path="/shoes/:id" element={<ProductDetail />} />
-              {/* <Route path="/about" element={<About />} /> */}
+              <Route path="/about" element={<About />} />
                 <Route path="/login" element={<LoginSingup />} />
                 <Route path='/search' element={<SearchResults />} />
 
