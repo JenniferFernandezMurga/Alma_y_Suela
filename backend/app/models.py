@@ -1,4 +1,4 @@
-from app import db
+from . import db
 from datetime import datetime
 
 class Shoe(db.Model):
@@ -65,5 +65,5 @@ class User(db.Model):
 class UserSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Optional
-    session_data = db.Column(db.Text)  # JSON con preferencias
+    session_data = db.Column(db.Text)  # JSON con preferences
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

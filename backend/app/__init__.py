@@ -24,8 +24,8 @@ def create_app():
     CORS(app)
 
     # Importar y registrar blueprints
-    from app.routes.recommendations import recommendations_bp
-    from app.routes.shoes import shoes_bp
+    from .routes.recommendations import recommendations_bp
+    from .routes.shoes import shoes_bp
 
     #Todas las rutas empiezan con /api (ej: /api/recommend)
     app.register_blueprint(recommendations_bp, url_prefix='/api')
