@@ -1,85 +1,39 @@
-# from flask import Flask
-# from flask_migrate import Migrate
-# from flask_cors import CORS
-# from app.database import db  # <-- Importar desde database.py
-
-# migrate = Migrate()
-
-# def create_app():
-#     app = Flask(__name__)
-    
-#     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoes.db'
-#     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-#  # PostgreSQL para producción/desarrollo
-#     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or \
-#         'postgresql://postgres:postgres@localhost:5432/stepwise'
-
-#     db.init_app(app)
-#     migrate.init_app(app, db)
-#     CORS(app)
-
-#     with app.app_context():
-#         # Importar modelos
-#         from app import models
-        
-#         # Importar y registrar blueprints
-#         from app.routes.recommendations import recommendations_bp
-#         from app.routes.shoes import shoes_bp
-#         from app.routes.users import users_bp
-
-#         app.register_blueprint(recommendations_bp, url_prefix='/api')
-#         app.register_blueprint(shoes_bp, url_prefix='/api')
-#         app.register_blueprint(users_bp, url_prefix='/api')
-
-#         db.create_all()
-        
-#     return app
-
-
-import os
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-from app.database import db
-from dotenv import load_dotenv
 
-# Cargar variables de entorno desde .env
-load_dotenv()
 
+db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
     
-    # Configuración de la base de datos
-    # PostgreSQL para producción/desarrollo, SQLite como fallback
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or \
-    #     'postgresql://postgres:postgres@localhost:5432/stepwise'
-    
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoes.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Desactivar seguimiento de modificaciones para ahorrar memoria
 
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    #Conectar extensiones a la app
+    #Inicializar extensiones
 
-    # Inicializar extensiones
+    # Conecta SQLAlchemy con Flask
     db.init_app(app)
+    #Conecta las migraciones con Flask y la BD
     migrate.init_app(app, db)
+    # Permite requests desde React (puerto 3000) a Flask (puerto 5000)
     CORS(app)
 
-    # Registrar blueprints
-    register_blueprints(app)
-    
-    # NO usar db.create_all() si usas Flask-Migrate
-    # Las tablas se crean con: flask db upgrade
-    
-    return app
+    # Importar y registrar blueprints
+    from .routes.recommendations import recommendations_bp
+    from .routes.shoes import shoes_bp
 
-def register_blueprints(app):
-    """Registrar todos los blueprints"""
-    from app.routes.recommendations import recommendations_bp
-    from app.routes.shoes import shoes_bp
-    from app.routes.users import users_bp
-
+    #Todas las rutas empiezan con /api (ej: /api/recommend)
     app.register_blueprint(recommendations_bp, url_prefix='/api')
     app.register_blueprint(shoes_bp, url_prefix='/api')
-    app.register_blueprint(users_bp, url_prefix='/api')
+    # app.register_blueprint(main_blueprint)
+
+    # Crear tablas en la base de datos
+    with app.app_context():
+        db.create_all()
+
+    return app
