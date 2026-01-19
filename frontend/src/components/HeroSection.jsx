@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import '../styles/HeroSection.css' 
 
 const HeroSection = () => {
   return (
@@ -51,9 +50,9 @@ const HeroSection = () => {
         <div className="hero-image">
           <div className="shoe-showcase">
             <img 
-              src="images/zapatilla-normon.jpg" 
+              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"
               alt="Zapatillas deportivas" 
-              className="shoe-image small"
+              className="shoe-image"
             />
             <div className="floating-card card-1">
               <span>🏃‍♂️ Para running</span>
