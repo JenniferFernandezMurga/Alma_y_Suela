@@ -23,23 +23,23 @@ const LoginSignup = () => {
 
         try {
             if (isSignup) {
-                // Lógica de registro (implementar después)
-                console.log('Registrando:', { name, email, password });
-                setSuccessMessage('¡Registro exitoso! Cambiando a login...');
-                setTimeout(() => {
-                    setIsSignup(false);
-                    setName('');
-                    setEmail('');
-                    setPassword('');
-                }, 2000);
+                const result = await actions.register(name, email, password);
+                if (result.success) {
+                    setSuccessMessage('¡Cuenta creada con éxito!');
+                    setTimeout(() => navigate('/'), 2000);
+                } else {
+                    setError(result.error);
+                }
             } else {
-                // Lógica de login (implementar después)
-                console.log('Login:', { email, password });
-                // actions.login(email, password, navigate);
-                navigate('/'); // Redirigir al home por ahora
+                const result = await actions.login(email, password);
+                if (result.success) {
+                    navigate('/');
+                } else {
+                    setError(result.error);
+                }
             }
         } catch (err) {
-            setError('Error al procesar la solicitud. Por favor, intenta nuevamente.');
+            setError('Error al conectar con el servidor.');
         } finally {
             setLoading(false);
         }
