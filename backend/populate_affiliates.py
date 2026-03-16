@@ -83,7 +83,7 @@ affiliate_data = [
 ]
 
 with app.app_context():
-    print("🚀 Poblando enlaces de afiliados...")
+    print("🚀 Poblando enlaces de afiliados")
     print("="*60)
     
     created = 0
