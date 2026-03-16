@@ -1,6 +1,6 @@
 import pytest
-from backend.app import create_app, db
-from backend.app.models import User
+from __init__ import create_app, db
+from models.user import User
 
 @pytest.fixture(scope='module')
 def test_app():
@@ -27,7 +27,8 @@ def test_user_model(test_app):
     """
     with test_app.app_context():
         # Crear una instancia de User
-        user = User(email="test@example.com")
+        user = User(email="test@example.com", name="Test User")
+        user.password = "password123"
 
         # Añadir y guardar en la base de datos en memoria
         db.session.add(user)

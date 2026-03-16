@@ -1,0 +1,237 @@
+.catalogo-page {
+    background: linear-gradient(180deg, #f8f7f4 0%, #eae8e1 100%);
+    min-height: 100vh;
+}
+
+.catalogo-hero {
+    background: linear-gradient(135deg, var(--color-musgo), var(--color-musgo-claro));
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.catalogo-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.catalogo-hero p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+.catalogo-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+/* Toolbar */
+.catalogo-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    white-space: nowrap;
+}
+
+.filter-select,
+.sort-select {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.price-range {
+    width: 150px;
+    accent-color: var(--color-musgo);
+}
+
+.price-value {
+    font-size: 0.9rem;
+    color: var(--color-musgo);
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.clear-filters-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: var(--color-texto);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+    background: #e0e0e0;
+    color: #dc3545;
+}
+
+.sort-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-section label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+/* Contador de resultados */
+.results-count {
+    font-size: 0.95rem;
+    color: var(--color-texto-claro);
+    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* No results */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.no-results i {
+    font-size: 4rem;
+    color: var(--color-madera);
+    margin-bottom: 20px;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    color: var(--color-texto);
+    margin-bottom: 10px;
+}
+
+.no-results p {
+    color: var(--color-texto-claro);
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, var(--color-musgo), var(--color-musgo-claro));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46,139,86,0.3);
+}
+
+/* Loading */
+.catalogo-loading,
+.catalogo-error {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top-color: var(--color-musgo);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn-retry {
+    padding: 10px 25px;
+    background: var(--color-madera);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-retry:hover {
+    background: var(--color-madera-oscuro);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .catalogo-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-select,
+    .sort-select,
+    .price-range {
+        width: 100%;
+    }
+
+    .sort-section {
+        justify-content: space-between;
+    }
+}

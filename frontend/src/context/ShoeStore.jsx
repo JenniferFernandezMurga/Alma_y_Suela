@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useReducer } from "react";
-import { API_ENDPOINTS } from '../config/api';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from "react";
 
 const ShoeStore = createContext();
 
-//iniar estados 
-
+// Estado inicial
 const initialState = {
+  auth: {
+    user: null,
+    token: localStorage.getItem('token') || null,
+    isAuthenticated: !!localStorage.getItem('token'),
+    loading: false,
+    error: null,
+    profileImage: localStorage.getItem('profileImage') || null
+  },
   userData: {
     foot_width: '',
     arch_type: '',
@@ -15,27 +21,23 @@ const initialState = {
     target_distance: '',
     running_level: ''
   },
-
-  recommendations : [],
+  recommendations: [],
   loading: false,
   error: null,
-  currentStep: 1,
-  user: null,
-  isAuthenticated: false
-
+  currentStep: 1
 };
 
-//REDUCER - La "máquina de estado" que actualiza el estado
+// REDUCER
 function shoeReducer(state, action) {
   console.log('🔧 Action:', action.type, 'Payload:', action.payload);
   
   switch (action.type) {
     case 'UPDATE_USER_DATA':
       return {
-        ...state, // Copia el estado actual
+        ...state,
         userData: {
-          ...state.userData,  // Copia los datos actuales del usuario
-          ...action.payload  // Fusiona los nuevos datos con los existentes
+          ...state.userData,
+          ...action.payload
         }
       };
       
@@ -77,30 +79,79 @@ function shoeReducer(state, action) {
       
     case 'RESET_FORM':
       return {
-        ...initialState,
-        user: state.user,
-        isAuthenticated: state.isAuthenticated
+        ...initialState
       };
 
-    case 'AUTH_SUCCESS':
+    case 'LOGIN_START':
       return {
         ...state,
-        user: action.payload,
-        isAuthenticated: true,
-        error: null
+        auth: {
+          ...state.auth,
+          loading: true,
+          error: null
+        }
       };
 
-    case 'AUTH_ERROR':
+    case 'LOGIN_SUCCESS':
+      const savedImage = localStorage.getItem('profileImage')
       return {
         ...state,
-        error: action.payload
+        auth: {
+          ...state.auth,
+          user: action.payload.user,
+          token: action.payload.token,
+          isAuthenticated: true,
+          loading: false,
+          error: null,
+          profileImage: savedImage || null
+        }
+      };
+
+    case 'UPDATE_PROFILE_IMAGE':
+    return {
+        ...state,
+        auth: {
+            ...state.auth,
+            profileImage: action.payload
+        }
+    };
+
+    case 'LOGIN_FAILURE':
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          loading: false,
+          error: action.payload
+        }
       };
 
     case 'LOGOUT':
       return {
         ...state,
-        user: null,
-        isAuthenticated: false
+        auth: {
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          loading: false,
+          error: null
+        }
+      };
+
+    case 'REGISTER_SUCCESS':
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          user: action.payload.user,
+          token: action.payload.token,
+          isAuthenticated: true,
+          loading: false,
+          error: null
+        }
       };
 
     default:
@@ -108,14 +159,45 @@ function shoeReducer(state, action) {
   }
 }
 
-// 4. PROVIDER - El componente que envuelve la app y provee el estado
+// PROVIDER
 export function ShoeProvider({ children }) {
-  // useReducer conecta el estado inicial con la función reductora
   const [state, dispatch] = useReducer(shoeReducer, initialState);
+  const hasRestoredSession = useRef(false); // Para evitar múltiples restauraciones
   
-  // 5. ACCIONES - Funciones que "despachan" acciones al reducer
+  // ✅ useEffect para restaurar sesión (con protección)
+  useEffect(() => {
+    // Evitar múltiples ejecuciones en StrictMode
+    if (hasRestoredSession.current) return;
+
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    const isAuth = localStorage.getItem('isAuthenticated');
+
+    console.log('🔄 Restaurando sesión:', { token: !!token, user: !!user, isAuth });
+
+    if (token && user && isAuth === 'true' && !state.auth.isAuthenticated) {
+      try {
+        const userData = JSON.parse(user);
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: userData,
+            token: token
+          }
+        });
+        console.log('✅ Sesión restaurada:', userData);
+        hasRestoredSession.current = true;
+      } catch (error) {
+        console.error('❌ Error restaurando sesión:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('isAuthenticated');
+      }
+    }
+  }, []); // Solo se ejecuta una vez
+
+  // ACCIONES
   const actions = {
-    // Actualiza los datos del usuario en el formulario
     updateUserData: (newData) => {
       dispatch({
         type: 'UPDATE_USER_DATA',
@@ -123,14 +205,11 @@ export function ShoeProvider({ children }) {
       });
     },
     
-    // Obtiene recomendaciones de la API
     fetchRecommendations: async (userData) => {
       try {
-        // Primero: indicar que empezó la carga
         dispatch({ type: 'FETCH_RECOMMENDATIONS_START' });
         
-        // Llamar a la API
-        const response = await fetch(API_ENDPOINTS.RECOMMEND, {
+        const response = await fetch('/api/recommend', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -144,14 +223,12 @@ export function ShoeProvider({ children }) {
         
         const data = await response.json();
         
-        // Éxito: guardar recomendaciones
         dispatch({
           type: 'FETCH_RECOMMENDATIONS_SUCCESS', 
           payload: data.recommendations
         });
         
       } catch (error) {
-        // Error: guardar mensaje de error
         dispatch({
           type: 'FETCH_RECOMMENDATIONS_ERROR',
           payload: error.message
@@ -159,77 +236,139 @@ export function ShoeProvider({ children }) {
       }
     },
     
-    // Limpiar resultados
+    login: async (email, password) => {
+      try {
+        dispatch({ type: 'LOGIN_START' });
+
+        console.log('📝 Intentando login con:', email);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const mockUser = {
+          id: Date.now(),
+          name: email.split('@')[0] || 'Usuario',
+          email: email
+        };
+
+        const mockToken = 'mock-jwt-token-' + Date.now();
+
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('isAuthenticated', 'true');
+
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: mockUser,
+            token: mockToken
+          }
+        });
+
+        console.log('✅ Login exitoso, usuario:', mockUser);
+
+        return { success: true };
+
+      } catch (error) {
+        console.error('❌ Error en login:', error);
+
+        dispatch({
+          type: 'LOGIN_FAILURE',
+          payload: 'Credenciales inválidas'
+        });
+
+        return { success: false, error: error.message };
+      }
+    },
+//     updateProfileImage: (imageData) => {
+//     localStorage.setItem('profileImage', imageData)
+//     dispatch({
+//         type: 'UPDATE_PROFILE_IMAGE',
+//         payload: imageData
+//     })
+// },
+    register: async (name, email, password) => {
+      try {
+        dispatch({ type: 'LOGIN_START' });
+
+        console.log('📝 Registrando:', name, email);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const mockUser = {
+          id: Date.now(),
+          name: name,
+          email: email
+        };
+
+        const mockToken = 'mock-jwt-token-register-' + Date.now();
+
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('isAuthenticated', 'true');
+
+        dispatch({
+          type: 'REGISTER_SUCCESS',
+          payload: {
+            user: mockUser,
+            token: mockToken
+          }
+        });
+
+        return { success: true };
+
+      } catch (error) {
+        dispatch({
+          type: 'LOGIN_FAILURE',
+          payload: 'Error en el registro'
+        });
+        return { success: false, error: error.message };
+      }
+    },
+
+    logout: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+
+      dispatch({ type: 'LOGOUT' });
+
+      console.log('👋 Sesión cerrada');
+    },
+
+    updateProfileImage: (imageData) => {
+    // Guardar en localStorage
+    if (imageData) {
+        localStorage.setItem('profileImage', imageData)
+    } else {
+        localStorage.removeItem('profileImage')
+    }
+
+    // Actualizar estado
+    dispatch({
+        type: 'UPDATE_PROFILE_IMAGE',
+        payload: imageData
+    })
+},
+
     clearRecommendations: () => {
       dispatch({ type: 'CLEAR_RECOMMENDATIONS' });
     },
-    
-    // Cambiar paso del formulario
+
     setStep: (step) => {
       dispatch({
         type: 'SET_STEP',
         payload: step
       });
     },
-    
-    // Reiniciar todo el formulario
+
     resetForm: () => {
       dispatch({ type: 'RESET_FORM' });
-    },
-
-    login: async (email, password) => {
-      try {
-        dispatch({ type: 'FETCH_RECOMMENDATIONS_START' }); // Reuse loading
-        const response = await fetch(API_ENDPOINTS.LOGIN, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        if (data.success) {
-          dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
-          return { success: true };
-        } else {
-          dispatch({ type: 'AUTH_ERROR', payload: data.error });
-          return { success: false, error: data.error };
-        }
-      } catch (error) {
-        dispatch({ type: 'AUTH_ERROR', payload: error.message });
-        return { success: false, error: error.message };
-      }
-    },
-
-    register: async (name, email, password) => {
-      try {
-        dispatch({ type: 'FETCH_RECOMMENDATIONS_START' });
-        const response = await fetch(API_ENDPOINTS.REGISTER, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
-        });
-        const data = await response.json();
-        if (data.success) {
-          dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
-          return { success: true };
-        } else {
-          dispatch({ type: 'AUTH_ERROR', payload: data.error });
-          return { success: false, error: data.error };
-        }
-      } catch (error) {
-        dispatch({ type: 'AUTH_ERROR', payload: error.message });
-        return { success: false, error: error.message };
-      }
-    },
-
-    logout: () => {
-      dispatch({ type: 'LOGOUT' });
     }
   };
 
-  // 6. VALOR que se provee a todos los componentes
   const value = {
-    state,    // { userData, recommendations, loading, error }
-    actions   // { updateUserData, fetchRecommendations, clearRecommendations, etc. }
+    state,
+    actions
   };
 
   return (
@@ -239,7 +378,7 @@ export function ShoeProvider({ children }) {
   );
 }
 
-// 7. HOOK personalizado para usar el Store fácilmente
+// HOOK personalizado
 export function useShoe() {
   const context = useContext(ShoeStore);
   if (!context) {

@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
+import "../styles/RecommendationForm.css"
 
 const RecommendationForm = () => {
     const [formData, setFormData] = useState({
-    
         gender: "",
         foot_width: "",
         arch_type: "",
@@ -11,55 +11,101 @@ const RecommendationForm = () => {
         activity_type: "",
         footstrike_type: "",
         target_distance: "",
-        running_level: ""
+        running_level: "",
+        // NUEVOS CAMPOS
+        drop_preference: "",
+        waterproof: false,
+        sole_type: "",
+        terrain_preference: ""
     })
+    const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const navigate = useNavigate()
 
-     // ✅ OPCIONES DE PESO DINÁMICAS
+    // Opciones de peso dinámicas
     const getWeightOptions = () => {
         if (formData.gender === 'female') {
             return [
-                { value: "55", label: "Menos de 60kg (Ligera)" },
-                { value: "65", label: "60-70kg (Media)" },
-                { value: "75", label: "70-80kg (Robusta)" },
-                { value: "85", label: "Más de 80kg (Fuerte)" }
+                { value: "55", label: "Menos de 60kg", desc: "Ligera" },
+                { value: "65", label: "60-70kg", desc: "Media" },
+                { value: "75", label: "70-80kg", desc: "Robusta" },
+                { value: "85", label: "Más de 80kg", desc: "Fuerte" }
             ]
         } else {
             return [
-                { value: "65", label: "Menos de 70kg (Ligero)" },
-                { value: "80", label: "70-85kg (Medio)" },
-                { value: "90", label: "85-95kg (Robusto)" },
-                { value: "100", label: "Más de 95kg (Fuerte)" }
+                { value: "65", label: "Menos de 70kg", desc: "Ligero" },
+                { value: "80", label: "70-85kg", desc: "Medio" },
+                { value: "90", label: "85-95kg", desc: "Robusto" },
+                { value: "100", label: "Más de 95kg", desc: "Fuerte" }
             ]
         }
     }
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target
-    //     setFormData(prev => ({
-    //         ...prev,
-    //         [name]: value
-    //     }))
-    // }
-
     const handleChange = (e) => {
-            const { name, value } = e.target
+        const { name, value, type, checked } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }))
+
+        // Resetear peso si cambia el género
+        if (name === 'gender') {
             setFormData(prev => ({
                 ...prev,
-                [name]: value
+                gender: value,
+                weight: ""
             }))
-            
-            // ✅ RESETEAR PESO si cambia el género
-            if (name === 'gender') {
-                setFormData(prev => ({
-                    ...prev,
-                    gender: value,
-                    weight: ""  // Resetear peso al cambiar género
-                }))
-            }
-        }    
+        }
+    }
+
+    const nextStep = () => {
+        console.log("Validando paso:", currentStep);
+
+        // Validar campo requerido según el paso
+        if (currentStep === 1 && !formData.gender) {
+            setError("Por favor selecciona tu género")
+            return
+        }
+        if (currentStep === 2 && !formData.weight) {
+            setError("Por favor selecciona tu peso")
+            return
+        }
+        if (currentStep === 3 && !formData.foot_width) {
+            setError("Por favor selecciona el ancho de tu pie")
+            return
+        }
+        if (currentStep === 4 && !formData.arch_type) {
+            setError("Por favor selecciona tu tipo de arco")
+            return
+        }
+        if (currentStep === 5 && !formData.activity_type) {
+            setError("Por favor selecciona tu actividad principal")
+            return
+        }
+
+        setError("");
+
+        // Avanzar al siguiente paso
+        if (currentStep === 5) {
+            console.log("⚠️ IMPORTANTE: Voy a pasar al paso 6");
+        }
+
+        setCurrentStep(prev => {
+            const next = prev + 1;
+            console.log(`Avanzando del paso ${prev} al ${next}`);
+            return next;
+        });
+    }
+
+    const prevStep = () => {
+        setCurrentStep(prev => {
+            const prevStep = prev - 1;
+            console.log(`Retrocediendo al paso ${prevStep}`);
+            return prevStep;
+        });
+        setError("")
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -67,38 +113,36 @@ const RecommendationForm = () => {
         setError("")
         
         try {
-            console.log("📤 Datos del formulario (original):", formData)
-            
-            // ✅ CONVERSIÓN SEGURA EN FRONTEND + NUEVO CAMPO
+            // Preparar datos - convertir "unknown" a null
             const dataToSend = {
-                gender: formData.gender,  // ✅ NUEVO
-                foot_width: formData.foot_width,
-                arch_type: formData.arch_type,
-                weight: parseInt(formData.weight) || 70,  // ✅ CONVERTIDO A NÚMERO
+                gender: formData.gender,
+                foot_width: formData.foot_width === 'unknown' ? null : formData.foot_width,
+                arch_type: formData.arch_type === 'unknown' ? null : formData.arch_type,
+                weight: parseInt(formData.weight) || 70,
                 activity_type: formData.activity_type,
-                footstrike_type: formData.footstrike_type,
-                target_distance: formData.target_distance,
-                running_level: formData.running_level
+                footstrike_type: formData.footstrike_type === 'unknown' ? null : formData.footstrike_type,
+                target_distance: formData.target_distance || null,
+                running_level: formData.running_level || null,
+                // NUEVOS CAMPOS
+                drop_preference: formData.drop_preference || null,
+                waterproof: formData.waterproof,
+                sole_type: formData.sole_type || null,
+                terrain_preference: formData.terrain_preference || null
             }
             
-            console.log("📤 Datos enviados al backend:", dataToSend)
+            console.log("📤 Datos enviados:", dataToSend)
             
             const response = await fetch('http://localhost:5000/api/recommend', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSend)
             })
-            
-            console.log("📡 Status de respuesta:", response.status)
             
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status}`)
             }
             
             const data = await response.json()
-            console.log("📦 Respuesta recibida:", data)
             
             if (data.success) {
                 navigate('/recommendation-results', { 
@@ -111,228 +155,411 @@ const RecommendationForm = () => {
                 setError(data.error || "Error en la recomendación")
             }
         } catch (error) {
-            console.error("❌ Error en recomendación:", error)
+            console.error("❌ Error:", error)
             setError("Error de conexión con el servidor: " + error.message)
         } finally {
             setLoading(false)
         }
     }
 
-    return (
-        <div className="container mt-4">
-            <div className="row justify-content-center">
-                <div className="col-lg-8">
-                    <div className="card shadow">
-                        <div className="card-header bg-primary text-white text-center py-4">
-                            <h1 className="h3 mb-2">🎯 Encuentra tu zapatilla perfecta</h1>
-                            <p className="mb-0">Responde estas preguntas para una recomendación personalizada</p>
+    // Renderizado por pasos
+    const renderStep = () => {
+        switch(currentStep) {
+            case 1:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 1: Información básica</h3>
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-venus-mars"></i>
+                                Género
+                            </label>
+                            <small className="form-hint">Para ajustar mejor las recomendaciones</small>
+                            <select
+                                name="gender"
+                                className="form-select"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecciona tu género</option>
+                                <option value="female">Mujer</option>
+                                <option value="male">Hombre</option>
+                            </select>
                         </div>
+                    </div>
+                )
+            case 2:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 2: Tu peso</h3>
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-weight-scale"></i>
+                                Peso corporal
+                            </label>
+                            <small className="form-hint">
+                                {formData.gender === 'female'
+                                    ? "Rangos ajustados para mujeres"
+                                    : "Rangos ajustados para hombres"}
+                            </small>
+                            <select
+                                name="weight"
+                                className="form-select"
+                                value={formData.weight}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecciona tu peso</option>
+                                {getWeightOptions().map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label} • {option.desc}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                )
+            case 3:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 3: Ancho del pie</h3>
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-shoe-prints"></i>
+                                Ancho de tu pie
+                            </label>
+                            <small className="form-hint">
+                                ¿No lo sabes? <Link to="/blog/como-medir-ancho-pie" className="help-link">Aprende a medirlo aquí</Link>
+                            </small>
+                            <select
+                                name="foot_width"
+                                className="form-select"
+                                value={formData.foot_width}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecciona el ancho</option>
+                                <option value="narrow">Estrecho</option>
+                                <option value="standard">Normal</option>
+                                <option value="wide">Ancho</option>
+                                <option value="unknown">No lo sé / Quiero ayuda</option>
+                            </select>
+                        </div>
+                    </div>
+                )
+            case 4:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 4: Tipo de arco</h3>
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-archway"></i>
+                                Arco del pie
+                            </label>
+                            <small className="form-hint">
+                                ¿No lo sabes? <Link to="/blog/como-medir-arco-pie" className="help-link">Aprende a medirlo aquí</Link>
+                            </small>
+                            <select
+                                name="arch_type"
+                                className="form-select"
+                                value={formData.arch_type}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecciona tu tipo de arco</option>
+                                <option value="low">Arco bajo (pie plano)</option>
+                                <option value="neutral">Arco normal</option>
+                                <option value="high">Arco alto</option>
+                                <option value="unknown">No lo sé / Quiero ayuda</option>
+                            </select>
+                        </div>
+                    </div>
+                )
+            case 5:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 5: Actividad principal</h3>
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-running"></i>
+                                ¿Para qué usarás las zapatillas?
+                            </label>
+                            <select
+                                name="activity_type"
+                                className="form-select"
+                                value={formData.activity_type}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecciona tu actividad</option>
+                                <option value="road_running">🏃 Running en carretera</option>
+                                <option value="trail_running">⛰️ Trail running</option>
+                                <option value="gym">💪 Gimnasio / CrossTraining</option>
+                                <option value="walking">🚶 Caminar</option>
+                            </select>
+                        </div>
+                    </div>
+                )
+            case 6:
+                return (
+                    <div className="form-step">
+                        <h3 className="step-title">Paso 6: Detalles adicionales</h3>
+                        <p className="step-subtitle">Opcional - ayuda a afinar la recomendación</p>
                         
-                        <div className="card-body p-4">
-                            {error && (
-                                <div className="alert alert-danger" role="alert">
-                                    {error}
-                                </div>
-                            )}
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-shoe-prints"></i>
+                                Tipo de pisada
+                            </label>
+                            <small className="form-hint">
+                                ¿No lo sabes? <Link to="/blog/como-saber-mi-pisada" className="help-link">Guía para identificar tu pisada</Link>
+                            </small>
+                            <select
+                                name="footstrike_type"
+                                className="form-select"
+                                value={formData.footstrike_type}
+                                onChange={handleChange}
+                            >
+                                <option value="">Selecciona tu tipo de pisada</option>
+                                <option value="neutral">Neutra</option>
+                                <option value="over_pronation">Pronación (pie hacia dentro)</option>
+                                <option value="under_pronation">Supinación (pie hacia fuera)</option>
+                                <option value="unknown">No lo sé / Quiero ayuda</option>
+                            </select>
+                        </div>
 
-                            <form onSubmit={handleSubmit}>
-                                {/* ✅ NUEVO: Campo Género */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">🚻 Género</label>
-                                    <small className="text-muted d-block mb-2">Para ajustar mejor las recomendaciones</small>
-                                    <select 
-                                        name="gender"
-                                        className="form-select form-select-lg"
-                                        value={formData.gender}
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-route"></i>
+                                Distancia objetivo
+                            </label>
+                            <select
+                                name="target_distance"
+                                className="form-select"
+                                value={formData.target_distance}
+                                onChange={handleChange}
+                            >
+                                <option value="training">Entrenamiento general</option>
+                                <option value="5k">5K</option>
+                                <option value="10k">10K</option>
+                                <option value="half_marathon">Media maratón (21K)</option>
+                                <option value="marathon">Maratón (42K)</option>
+                                <option value="ultra">Ultramaratón (+42K)</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-chart-line"></i>
+                                Nivel de experiencia
+                            </label>
+                            <select
+                                name="running_level"
+                                className="form-select"
+                                value={formData.running_level}
+                                onChange={handleChange}
+                            >
+                                <option value="beginner">Principiante</option>
+                                <option value="intermediate">Intermedio</option>
+                                <option value="advanced">Avanzado</option>
+                                <option value="competitive">Competitivo</option>
+                            </select>
+                        </div>
+
+                        {/* NUEVOS CAMPOS AVANZADOS */}
+                        <h4 className="advanced-title">Preferencias avanzadas (opcional)</h4>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-sort"></i>
+                                Preferencia de drop
+                            </label>
+                            <small className="form-hint">El drop es la diferencia de altura entre el talón y la punta</small>
+                            <select
+                                name="drop_preference"
+                                className="form-select"
+                                value={formData.drop_preference}
+                                onChange={handleChange}
+                            >
+                                <option value="">Sin preferencia</option>
+                                <option value="low">Bajo (0-4mm) - Sensación natural</option>
+                                <option value="medium">Medio (5-8mm) - Equilibrado</option>
+                                <option value="high">Alto (9-12mm) - Tradicional</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                <i className="fas fa-water"></i>
+                                Impermeabilidad
+                            </label>
+                            <div className="checkbox-group">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        name="waterproof"
+                                        checked={formData.waterproof}
                                         onChange={handleChange}
-                                        required
+                                    />
+                                    Prefiero zapatillas impermeables (Gore-Tex, etc.)
+                                </label>
+                            </div>
+                        </div>
+
+                        {formData.activity_type === 'trail_running' && (
+                            <>
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        <i className="fas fa-shoe-prints"></i>
+                                        Tipo de suela
+                                    </label>
+                                    <small className="form-hint">Algunas marcas tienen tecnologías específicas</small>
+                                    <select 
+                                        name="sole_type"
+                                        className="form-select"
+                                        value={formData.sole_type}
+                                        onChange={handleChange}
                                     >
-                                        <option value="">Selecciona tu género</option>
-                                        <option value="female">Mujer</option>
-                                        <option value="male">Hombre</option>
-                                        {/* <option value="other">Otro / Prefiero no decir</option> */}
+                                        <option value="">Sin preferencia</option>
+                                        <option value="vibram">Vibram</option>
+                                        <option value="contagrip">Contagrip (Salomon)</option>
+                                        <option value="continental">Continental</option>
                                     </select>
                                 </div>
 
-                                {/* ✅ Peso DINÁMICO */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">⚖️ Tu peso corporal</label>
-                                    <small className="text-muted d-block mb-2">
-                                        {formData.gender === 'female' 
-                                            ? "Rangos ajustados para mujeres" 
-                                            : formData.gender === 'male' 
-                                                ? "Rangos ajustados para hombres"
-                                                : "Selecciona tu género primero"}
-                                    </small>
-                                    
-                                    {formData.gender ? (
-                                        <select 
-                                            name="weight"
-                                            className="form-select form-select-lg"
-                                            value={formData.weight}
-                                            onChange={handleChange}
-                                            required
-                                        >
-                                            <option value="">Selecciona tu peso</option>
-                                            {getWeightOptions().map(option => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        <div className="alert alert-info">
-                                            ⚠️ Por favor, selecciona tu género primero para ver los rangos de peso adecuados
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Ancho del pie */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">👟 Ancho de tu pie</label>
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        <i className="fas fa-mountain"></i>
+                                        Tipo de terreno
+                                    </label>
+                                    <small className="form-hint">¿Por dónde sueles correr?</small>
                                     <select 
-                                        name="foot_width"
-                                        className="form-select form-select-lg"
-                                        value={formData.foot_width}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona el ancho de tu pie</option>
-                                        <option value="narrow">Estrecho</option>
-                                        <option value="standard">Normal</option>
-                                        <option value="wide">Ancho</option>
-                                    </select>
-                                </div>
-
-                                {/* Tipo de arco */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">🦶 Tipo de arco del pie</label>
-                                    <select 
-                                        name="arch_type"
-                                        className="form-select form-select-lg"
-                                        value={formData.arch_type}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona tu tipo de arco</option>
-                                        <option value="low">Arco bajo (pie plano)</option>
-                                        <option value="neutral">Arco normal</option>
-                                        <option value="high">Arco alto</option>
-                                    </select>
-                                </div>
-
-                                {/* Peso corporal - ✅ VALORES NUMÉRICOS */}
-                                {/* <div className="mb-4">
-                                    <label className="form-label h5">⚖️ Tu peso corporal</label>
-                                    <select 
-                                        name="weight"
-                                        className="form-select form-select-lg"
-                                        value={formData.weight}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona tu peso</option>
-                                        <option value="60">Menos de 70kg (Ligero)</option>
-                                        <option value="80">70-90kg (Medio)</option>
-                                        <option value="95">Más de 90kg (Pesado)</option>
-                                    </select>
-                                </div> */}
-
-                                {/* Tipo de actividad - REQUERIDO */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">🏃 Actividad principal</label>
-                                    <small className="text-muted d-block mb-2">¿Para qué usarás principalmente las zapatillas?</small>
-                                    <select 
-                                        name="activity_type"
-                                        className="form-select form-select-lg"
-                                        value={formData.activity_type}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona tu actividad</option>
-                                        <option value="road_running">Running en carretera</option>
-                                        <option value="trail_running">Trail running</option>
-                                        <option value="gym">Gimnasio / CrossTraining</option>
-                                        <option value="walking">Caminar</option>
-                                    </select>
-                                </div>
-
-                                {/* Tipo de pisada - OPCIONAL pero recomendado */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">👣 Tipo de pisada</label>
-                                    <small className="text-muted d-block mb-2">
-                                        ¿Sabes cómo pisas al correr? 
-                                        <span className="text-muted"> (Si no sabes, déjalo en blanco)</span>
-                                    </small>
-                                    <select 
-                                        name="footstrike_type"
-                                        className="form-select form-select-lg"
-                                        value={formData.footstrike_type}
+                                        name="terrain_preference"
+                                        className="form-select"
+                                        value={formData.terrain_preference}
                                         onChange={handleChange}
                                     >
-                                        <option value="">No estoy seguro / Neutral</option>
-                                        <option value="over_pronation">Pronación (pie hacia dentro)</option>
-                                        <option value="under_pronation">Supinación (pie hacia fuera)</option>
-                                        <option value="neutral">Neutra</option>
+                                        <option value="">Sin preferencia</option>
+                                        <option value="asfalto">Asfalto / Carretera</option>
+                                        <option value="mixto">Mixto (pistas forestales)</option>
+                                        <option value="tecnico">Técnico (montaña, rocas)</option>
                                     </select>
                                 </div>
+                            </>
+                        )}
+                    </div>
+                )
+            default:
+                return null
+        }
+    }
 
-                                {/* Distancia objetivo - OPCIONAL */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">📏 Distancia objetivo</label>
-                                    <small className="text-muted d-block mb-2">¿Qué distancia sueles recorrer?</small>
-                                    <select 
-                                        name="target_distance"
-                                        className="form-select form-select-lg"
-                                        value={formData.target_distance}
-                                        onChange={handleChange}
+    return (
+        <div className="recommendation-page">
+            <div className="recommendation-container">
+                <div className="recommendation-card">
+                    <div className="card-header">
+                        <h1>
+                            <i className="fas fa-magic"></i>
+                            Encuentra tu zapatilla perfecta
+                        </h1>
+                        <p>Responde estas preguntas para una recomendación 100% personalizada</p>
+
+                        {/* Progress bar */}
+                        <div className="progress-steps">
+                            <div className="progress-bar">
+                                <div
+                                    className="progress-fill"
+                                    style={{ width: `${(currentStep / 6) * 100}%` }}
+                                ></div>
+                            </div>
+                            <div className="step-indicators">
+                                {[1,2,3,4,5,6].map(step => (
+                                    <div
+                                        key={step}
+                                        className={`step-dot ${currentStep >= step ? 'active' : ''}`}
                                     >
-                                        <option value="training">Entrenamiento general</option>
-                                        <option value="5k">5K</option>
-                                        <option value="10k">10K</option>
-                                        <option value="half_marathon">Media maratón (21K)</option>
-                                        <option value="marathon">Maratón (42K)</option>
-                                         <option value="ultra">Ultramaratón (+42K)</option>
-                                    </select>
-                                </div>
+                                        {step}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                                {/* Nivel de running - OPCIONAL */}
-                                <div className="mb-4">
-                                    <label className="form-label h5">🚀 Nivel de experiencia</label>
-                                    <small className="text-muted d-block mb-2">¿Cómo te consideras como corredor?</small>
-                                    <select 
-                                        name="running_level"
-                                        className="form-select form-select-lg"
-                                        value={formData.running_level}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="beginner">Principiante</option>
-                                        <option value="intermediate">Intermedio</option>
-                                        <option value="advanced">Avanzado</option>
-                                        <option value="competitive">Competitivo</option>
-                                    </select>
-                                </div>
+                        {/* Indicador visual del paso (temporal) */}
+                        <div style={{
+                            textAlign: 'center',
+                            marginTop: '10px',
+                            padding: '5px',
+                            background: '#f0f0f0',
+                            borderRadius: '5px',
+                            color: '#333'
+                        }}>
+                            Paso actual: {currentStep}/6
+                        </div>
+                    </div>
 
-                                {/* Botón de envío */}
-                                <div className="text-center mt-5">
+                    <div className="card-body">
+                        {error && (
+                            <div className="alert-error">
+                                <i className="fas fa-exclamation-circle"></i>
+                                {error}
+                            </div>
+                        )}
+
+                        {/* FORMULARIO - solo muestra el paso actual */}
+                        <form onSubmit={handleSubmit}>
+                            {renderStep()}
+
+                            {/* SOLO EL BOTÓN DE SUBMIT está dentro del form */}
+                            {currentStep === 6 && (
+                                <div className="form-navigation" style={{ justifyContent: 'center' }}>
                                     <button 
                                         type="submit" 
-                                        className="btn btn-primary btn-lg px-5 py-3"
+                                        className="btn-submit"
                                         disabled={loading}
-                                        style={{ fontSize: '1.2rem' }}
                                     >
                                         {loading ? (
                                             <>
-                                                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                                Analizando tus respuestas...
+                                                <span className="spinner"></span>
+                                                Analizando...
                                             </>
                                         ) : (
-                                            "🎯 Encontrar mis zapatillas ideales"
+                                            <>
+                                                <i className="fas fa-magic"></i>
+                                                Obtener recomendación
+                                            </>
                                         )}
                                     </button>
                                 </div>
-                            </form>
-                        </div>
+                            )}
+                        </form>
+
+                        {/* BOTONES DE NAVEGACIÓN - fuera del form */}
+                        {currentStep !== 6 && (
+                            <div className="form-navigation">
+                                {currentStep > 1 && (
+                                    <button
+                                        type="button"
+                                        className="btn-prev"
+                                        onClick={prevStep}
+                                    >
+                                        <i className="fas fa-arrow-left"></i>
+                                        Anterior
+                                    </button>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="btn-next"
+                                    onClick={nextStep}
+                                    style={{ marginLeft: currentStep > 1 ? 'auto' : '0' }}
+                                >
+                                    Siguiente
+                                    <i className="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

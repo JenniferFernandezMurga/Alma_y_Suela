@@ -5,8 +5,5 @@ export const API_CONFIG = {
 
 export const API_ENDPOINTS = {
     SEARCH: `${API_CONFIG.BASE_URL}/api/shoes/search`,
-    SHOES: `${API_CONFIG.BASE_URL}/api/shoes`,
-    RECOMMEND: `${API_CONFIG.BASE_URL}/api/recommend`,
-    LOGIN: `${API_CONFIG.BASE_URL}/api/auth/login`,
-    REGISTER: `${API_CONFIG.BASE_URL}/api/auth/register`
+    SHOES: `${API_CONFIG.BASE_URL}/api/shoes`
 }
