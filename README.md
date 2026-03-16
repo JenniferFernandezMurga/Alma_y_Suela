@@ -1,6 +1,6 @@
-# StepWise: Your Personal Shoe Recommender
+# runwise: Your Personal Shoe Recommender
 
-StepWise is a web application designed to help you find the perfect pair of shoes. By answering a few simple questions about your needs and preferences, our recommendation engine will suggest the best options from our curated database of footwear.
+runwise is a web application designed to help you find the perfect pair of shoes. By answering a few simple questions about your needs and preferences, our recommendation engine will suggest the best options from our curated database of footwear.
 
 ## Key Features
 
@@ -31,8 +31,8 @@ StepWise is a web application designed to help you find the perfect pair of shoe
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/stepwise.git
-    cd stepwise
+    git clone https://github.com/your-username/runwise.git
+    cd runwise
     ```
 
 2.  **Create and activate a virtual environment:**

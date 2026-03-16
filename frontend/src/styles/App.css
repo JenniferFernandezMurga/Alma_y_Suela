@@ -1,246 +1,364 @@
-/* Hero Section Styles - Naturaleza */
+/* ===== VARIABLES GLOBALES ===== */
+:root {
+  --color-musgo: #2E8B57;
+  --color-musgo-claro: #8FBC8F;
+  --color-madera-claro: #D2B48C;
+  --color-madera: #A67B5B;
+  --color-madera-oscuro: #8B5A2B;
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== LAYOUT GLOBAL - NUEVO ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* ===== HERO SECTION - ZAPATILLA MÁS PEQUEÑA ===== */
 .hero-section {
-  background: linear-gradient(135deg, #8fbc8f 0%, #2e8b57 100%);
+  position: relative;
   color: white;
-  padding: 80px 0;
-  min-height: 80vh;
+  padding: 40px 0;
+  min-height: 85vh;
   display: flex;
   align-items: center;
-  position: relative;
   overflow: hidden;
 }
 
-.hero-section::before {
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+  z-index: 1;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Títulos más pequeños */
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.95;
+}
+
+/* Stats más compactas */
+.hero-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 0.8rem;
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFD700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== CONTENEDOR ZAPATILLA - MUCHO MÁS PEQUEÑO ===== */
+.glass-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 1.2rem;
+  max-width: 320px;
+  margin: 0 auto;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+/* Zapatilla - MUCHO MÁS PEQUEÑA */
+.floating-shoe {
+  max-height: 130px;
+  width: auto;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+  transform: rotate(-5deg);
+  transition: transform 0.3s ease;
+}
+
+/* Badge más pequeño */
+.product-badge {
+  padding: 4px 12px;
+  font-size: 0.65rem;
+}
+
+/* Especificaciones más compactas */
+.spec-item {
+  padding: 0.4rem;
+}
+
+.spec-item .fw-bold {
+  font-size: 0.8rem;
+}
+
+/* ===== SECCIONES DE PRODUCTOS - FONDOS CORREGIDOS ===== */
+.section-container {
+  padding: 30px 25px;
+  border-radius: 24px;
+  margin-bottom: 35px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Overlay oscuro - SIEMPRE visible */
+.section-container::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(210,180,140,0.1)"/></svg>');
-  background-size: cover;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.6) 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
-.hero-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
+.section-container > * {
   position: relative;
   z-index: 2;
 }
 
-.hero-title {
-  font-size: 3.5rem;
+/* ===== NOVEDADES - CORREGIDO ===== */
+.section-novedades {
+  background-image: url('https://images.pexels.com/photos/991509/pexels-photo-991509.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  background-position: center 30%;
+}
+
+/* ===== OFERTAS - CORREGIDO ===== */
+.section-ofertas {
+  background-image: url('https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  background-position: center 40%;
+}
+
+/* ===== ASFALTO - CORREGIDO ===== */
+.section-asfalto {
+  background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=2070&auto=format&fit=crop');
+  background-position: center;
+}
+
+/* ===== TRAIL - CORREGIDO ===== */
+.section-trail {
+  background-image: url('https://images.pexels.com/photos/917510/pexels-photo-917510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  background-position: center;
+}
+
+.section-title {
+  font-size: 1.8rem;
   font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 4px rgba(47, 79, 79, 0.3);
-}
-
-.highlight {
-  color: #d2b48c;
-  text-shadow: 2px 2px 4px rgba(47, 79, 79, 0.5);
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  opacity: 0.95;
-  font-weight: 300;
-}
-
-/* Stats */
-.hero-stats {
+  margin-bottom: 20px;
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
-.stat {
-  text-align: center;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(210, 180, 140, 0.3);
-}
-
-.stat-number {
-  display: block;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #d2b48c;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.9;
-  font-weight: 500;
-}
-
-/* Buttons */
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 15px 30px;
+.section-btn {
+  padding: 8px 20px;
   border-radius: 50px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  border: 2px solid white;
+  color: white;
   text-decoration: none;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  text-align: center;
-  display: inline-block;
 }
 
-.btn-primary {
-  background: #2e8b57;
+.section-btn:hover {
+  background: white;
+  color: #2C3E50;
+}
+
+/* ===== FOOTER ESTILOS - NUEVO ===== */
+.footer {
+  background: linear-gradient(135deg, #2C3E50 0%, #1a252f 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3);
-}
-
-.btn-primary:hover {
-  background: #228b22;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: white;
-  border: 2px solid #d2b48c;
-  box-shadow: 0 4px 15px rgba(210, 180, 140, 0.2);
-}
-
-.btn-secondary:hover {
-  background: #d2b48c;
-  color: #2f4f4f;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(210, 180, 140, 0.3);
-}
-
-/* Image Section */
-.hero-image {
-  position: relative;
-}
-
-.shoe-showcase {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.shoe-image {
+  padding: 40px 0 20px;
+  margin-top: 60px;
   width: 100%;
-  max-width: 500px;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(47, 79, 79, 0.3);
-  border: 3px solid #d2b48c;
 }
 
-.floating-card {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.95);
-  color: #2f4f4f;
-  padding: 12px 20px;
-  border-radius: 50px;
+.footer a {
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: var(--color-musgo);
+}
+
+.footer-logo img {
+  height: 40px;
+  filter: brightness(0) invert(1);
+}
+
+.footer h5 {
+  color: var(--color-musgo);
+  margin-bottom: 20px;
   font-weight: 600;
-  box-shadow: 0 8px 25px rgba(47, 79, 79, 0.2);
-  animation: float 3s ease-in-out infinite;
-  backdrop-filter: blur(10px);
-  border: 1px solid #d2b48c;
-  font-size: 0.9rem;
 }
 
-.card-1 {
-  top: 20%;
-  left: -5%;
-  animation-delay: 0s;
-  background: rgba(143, 188, 143, 0.9);
-  color: white;
+.footer ul {
+  list-style: none;
+  padding: 0;
 }
 
-.card-2 {
-  top: 50%;
-  right: -8%;
-  animation-delay: 1s;
-  background: rgba(210, 180, 140, 0.9);
-  color: #2f4f4f;
+.footer ul li {
+  margin-bottom: 10px;
 }
 
-.card-3 {
-  bottom: 20%;
-  left: -3%;
-  animation-delay: 2s;
-  background: rgba(46, 139, 87, 0.9);
-  color: white;
+.footer .disclaimer {
+  background: rgba(46, 139, 86, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 139, 86, 0.3);
+  font-size: 0.8rem;
+  color: #bdc3c7;
+  margin-top: 20px;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+.footer hr {
+  border-color: rgba(255,255,255,0.1);
+  margin: 30px 0 20px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .hero-container {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 40px;
-  }
-  
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  
-  .hero-stats {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .hero-actions {
-    justify-content: center;
-  }
-
-  .floating-card {
-    display: none;
-  }
-
-  .stat {
-    min-width: 100px;
-  }
+.footer .copyright {
+  color: #95a5a6;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
-.navbar {
-    min-height: 80px !important;  /* Asegurar altura mínima suficiente */
-}
-
-@media (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-stats {
-    gap: 1rem;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .btn {
+/* ===== CONTENEDOR GLOBAL ===== */
+.container-custom {
     width: 100%;
-    max-width: 250px;
+    max-width: 1200px; /* O 1400px, elige el que uses */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Para Bootstrap, ajustamos el container por defecto */
+.container, .container-fluid {
+    max-width: 1200px !important;
+    padding: 0 20px !important;
+}
+
+/* Asegura que todas las filas respeten el padding */
+.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .hero-title { font-size: 2.2rem; }
+  .glass-container { max-width: 280px; }
+  .floating-shoe { max-height: 110px; }
+}
+
+/* Móvil grande */
+@media (max-width: 768px) {
+  .hero-section { min-height: auto; padding: 60px 0; }
+  .glass-container { max-width: 260px; margin-top: 30px; }
+  .floating-shoe { max-height: 100px; }
+  .section-container { padding: 20px 15px; }
+  
+  /* Footer responsive */
+  .footer {
+    padding: 30px 0 15px;
+    text-align: center;
+  }
+  
+  .footer h5 {
+    margin-top: 30px;
+  }
+  
+  .footer .disclaimer {
+    text-align: left;
+  }
+}
+
+/* Móvil pequeño */
+@media (max-width: 576px) {
+  .hero-title { 
+    font-size: 1.8rem; 
+    text-align: center; 
+  }
+  .hero-stats { 
+    justify-content: center; 
+  }
+  .glass-container { 
+    max-width: 240px; 
+  }
+  .floating-shoe { 
+    max-height: 90px; 
+  }
+  .section-title { 
+    font-size: 1.5rem; 
+  }
+}
+
+/* Móvil muy pequeño */
+@media (max-width: 375px) {
+  .footer .disclaimer {
+    font-size: 0.75rem;
+    padding: 10px;
   }
 }

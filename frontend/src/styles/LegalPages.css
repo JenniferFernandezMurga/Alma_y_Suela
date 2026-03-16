@@ -1,0 +1,112 @@
+/* Estilos comunes para páginas legales */
+.privacy-section,
+.cookies-section,
+.legal-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.privacy-section h2,
+.cookies-section h2,
+.legal-section h2 {
+    margin-top: 0;
+}
+
+.privacy-section h5,
+.cookies-section h5,
+.legal-section h5 {
+    color: #5D4037;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.privacy-section ul,
+.cookies-section ul,
+.legal-section ul {
+    padding-left: 20px;
+}
+
+.privacy-section li,
+.cookies-section li,
+.legal-section li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.privacy-section .table,
+.cookies-section .table,
+.legal-section .table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.privacy-section .table th,
+.cookies-section .table th,
+.legal-section .table th {
+    background: #2E8B57;
+    color: white;
+    font-weight: 500;
+    padding: 10px;
+}
+
+.privacy-section .table td,
+.cookies-section .table td,
+.legal-section .table td {
+    padding: 8px 10px;
+}
+
+.privacy-section .alert-info,
+.cookies-section .alert-info,
+.legal-section .alert-info {
+    background: #E3F2FD;
+    border-left: 4px solid #2196F3;
+    color: #0D47A1;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.privacy-section .alert-warning,
+.cookies-section .alert-warning,
+.legal-section .alert-warning {
+    background: #FFF3E0;
+    border-left: 4px solid #FF9800;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.card.bg-light {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .privacy-section,
+    .cookies-section,
+    .legal-section {
+        padding: 20px;
+    }
+    
+    .privacy-section .table,
+    .cookies-section .table,
+    .legal-section .table {
+        font-size: 0.85rem;
+    }
+    
+    .privacy-section .table th,
+    .cookies-section .table th,
+    .legal-section .table th {
+        padding: 6px;
+    }
+    
+    .privacy-section .table td,
+    .cookies-section .table td,
+    .legal-section .table td {
+        padding: 6px;
+    }
+}
